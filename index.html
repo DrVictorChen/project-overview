@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI 管家協作專案總覽 — 神經網路控制台</title>
+  <title>醫師 × AI 管家 專案神經網路控制台</title>
   <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
   <style>
     :root {
@@ -504,9 +504,9 @@
         layer: "center",
         group: "中心",
         status: "核心",
-        desc: "以 OpenClaw 為核心的 AI 管家系統，串起所有專案、知識筆記與基礎設施。",
+        desc: "AI 管家中樞，串起所有專案、知識筆記與基礎設施。",
         importance: 42,
-        metrics: { "專案": "8 個面向", "知識庫": "3 大領域", "基礎設施": "5 項" },
+        metrics: { "專案面向": "8", "知識面向": "3", "基礎設施": "5" },
         tags: ["OpenClaw", "Jarvis", "Obsidian", "整體協同"]
       },
 
@@ -516,10 +516,10 @@
         layer: "project",
         group: "核心專案",
         status: "✅ V10 完成，待決策 Phase 3",
-        desc: "從 V2 到 V10 的量化迭代主軸，V9b-Ens5 Top5 目前最佳。",
+        desc: "從 V2 到 V10 的量化迭代主軸，V9b Ensemble 目前最佳。",
         importance: 34,
         metrics: { "迭代版本": "V2 → V10", "方法": "Transformer + Ensemble", "現況": "持續優化中" },
-        tags: ["FinLab", "回測驗證", "GPU 訓練"],
+        tags: ["FinLab API", "Mac mini 回測", "Windows GPU"],
       },
       {
         id: "ig_med",
@@ -553,7 +553,7 @@
         desc: "自建 Python 自動放貸機器人，完整開發與測試流程。",
         importance: 20,
         metrics: { "開發": "完成", "測試": "全數通過", "階段": "準備上線" },
-        tags: ["Python", "自動化", "風控"]
+        tags: ["Python", "Lending", "風控"]
       },
       {
         id: "trading_system",
@@ -600,8 +600,8 @@
         tags: ["演講", "敘事", "OpenClaw"]
       },
 
-      { id: "v9b", name: "V9b Ensemble", layer: "sub", group: "子專案", status: "最佳表現", desc: "現階段表現最優的模型組合", importance: 12, tags: ["Ensemble", "Best"] },
-      { id: "v10", name: "V10 實驗", layer: "sub", group: "子專案", status: "完成", desc: "新架構實驗，持續迭代中", importance: 11, tags: ["完成", "迭代"] },
+      { id: "v9b", name: "V9b Ensemble", layer: "sub", group: "子專案", status: "最佳表現", desc: "現階段最佳模型組合", importance: 12, tags: ["Top5", "Best"] },
+      { id: "v10", name: "V10", layer: "sub", group: "子專案", status: "完成", desc: "新架構實驗，持續迭代中", importance: 11, tags: ["完成", "待調整"] },
       { id: "exp_window", name: "Expanding Window", layer: "sub", group: "子專案", status: "研究", desc: "時序擴展視窗訓練設計", importance: 10, tags: ["時序"] },
       { id: "meta_learner", name: "Meta-Learner", layer: "sub", group: "子專案", status: "研究", desc: "模型融合與權重調配", importance: 10, tags: ["Ensemble"] },
       { id: "phase_regime", name: "Phase1 Regime", layer: "sub", group: "子專案", status: "研究", desc: "市場 regime 偵測", importance: 10, tags: ["Regime"] },
@@ -619,14 +619,15 @@
       { id: "win4060", name: "Windows GPU 主機", layer: "infra", group: "基礎設施", status: "運行中", desc: "深度學習訓練主機", importance: 14, tags: ["GPU"] },
       { id: "openclaw", name: "OpenClaw + Jarvis", layer: "infra", group: "基礎設施", status: "運行中", desc: "AI 管家串接所有流程", importance: 16, tags: ["AI 管理"] },
       { id: "telegram", name: "Telegram", layer: "infra", group: "基礎設施", status: "運行中", desc: "主要溝通介面", importance: 12, tags: ["通訊"] },
-      { id: "github", name: "GitHub", layer: "infra", group: "基礎設施", status: "運行中", desc: "程式碼託管與 Pages 分享", importance: 13, tags: ["版本管理"] }
+      { id: "github", name: "GitHub", layer: "infra", group: "基礎設施", status: "運行中", desc: "程式碼託管與 Pages 分享", importance: 13, tags: ["版本管理"] },
+      { id: "obsidian", name: "Obsidian 知識庫", layer: "infra", group: "基礎設施", status: "運行中", desc: "所有專案的知識沉澱終點，筆記、MOC、儀表板的載體", importance: 15, tags: ["知識管理", "第二大腦"] }
     ];
 
     const links = [
       ...[
         "trade_bible", "ig_med", "pocus", "bitfinex", "trading_system", "poly", "apple_notes", "speech",
         "med_knowledge", "ai_knowledge", "trade_knowledge",
-        "macmini", "win4060", "openclaw", "telegram", "github"
+        "macmini", "win4060", "openclaw", "telegram", "github", "obsidian"
       ].map(id => ({ source: "core", target: id, strength: 0.55 })),
 
       { source: "trade_bible", target: "v9b", strength: 0.5 },
@@ -653,7 +654,13 @@
       { source: "ig_med", target: "github", strength: 0.2 },
       { source: "pocus", target: "github", strength: 0.24 },
       { source: "openclaw", target: "telegram", strength: 0.25 },
-      { source: "openclaw", target: "ai_knowledge", strength: 0.25 }
+      { source: "openclaw", target: "ai_knowledge", strength: 0.25 },
+      { source: "pocus", target: "obsidian", strength: 0.35 },
+      { source: "apple_notes", target: "obsidian", strength: 0.35 },
+      { source: "speech", target: "obsidian", strength: 0.3 },
+      { source: "med_knowledge", target: "obsidian", strength: 0.3 },
+      { source: "ai_knowledge", target: "obsidian", strength: 0.3 },
+      { source: "trade_knowledge", target: "obsidian", strength: 0.3 }
     ];
 
     const statusColor = status => {
