@@ -1,0 +1,961 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI 管家協作專案總覽 — 神經網路控制台</title>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <style>
+    :root {
+      --bg-0: #060a13;
+      --bg-1: #0a1222;
+      --bg-2: #0d1c33;
+      --panel: rgba(11, 19, 36, 0.78);
+      --line: rgba(158, 196, 255, 0.2);
+      --line-strong: rgba(122, 181, 255, 0.45);
+      --text: #eaf3ff;
+      --text-dim: #9db1cd;
+      --cyan: #00d4ff;
+      --blue: #4f86ff;
+      --teal: #2cf7d6;
+      --green: #3dff89;
+      --amber: #ffcc66;
+      --orange: #ff8b5a;
+      --pink: #ff6edc;
+      --violet: #8f7dff;
+      --danger: #ff6363;
+      --radius: 18px;
+      --shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 12% 10%, rgba(30, 94, 190, 0.28), transparent 28%),
+        radial-gradient(circle at 90% 20%, rgba(13, 210, 255, 0.18), transparent 30%),
+        radial-gradient(circle at 80% 90%, rgba(130, 52, 210, 0.15), transparent 28%),
+        linear-gradient(145deg, var(--bg-0), var(--bg-1) 45%, var(--bg-2));
+      overflow: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      mask-image: radial-gradient(circle at 50% 45%, black 25%, transparent 85%);
+      pointer-events: none;
+      opacity: 0.35;
+    }
+
+    .dashboard {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      grid-template-rows: auto auto 1fr;
+      gap: 16px;
+      height: 100vh;
+      padding: 18px;
+    }
+
+    .glass {
+      background: var(--panel);
+      border: 1px solid rgba(131, 182, 255, 0.18);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,0.04);
+      backdrop-filter: blur(8px);
+    }
+
+    .header {
+      grid-column: 1 / -1;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::after {
+      content: "";
+      position: absolute;
+      right: -20%;
+      width: 50%;
+      height: 180%;
+      background: linear-gradient(90deg, transparent, rgba(124, 210, 255, 0.25), transparent);
+      transform: rotate(10deg);
+      animation: scan 6s linear infinite;
+      pointer-events: none;
+    }
+
+    @keyframes scan {
+      from { transform: translateX(0) rotate(10deg); }
+      to { transform: translateX(-220%) rotate(10deg); }
+    }
+
+    .title-wrap h1 {
+      margin: 0;
+      font-size: clamp(1.1rem, 2.4vw, 1.7rem);
+      letter-spacing: 0.03em;
+      text-shadow: 0 0 14px rgba(79, 134, 255, 0.5);
+    }
+
+    .title-wrap p {
+      margin: 5px 0 0;
+      color: var(--text-dim);
+      font-size: 0.9rem;
+    }
+
+    .status-capsule {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      z-index: 1;
+    }
+
+    .capsule {
+      background: rgba(12, 27, 53, 0.7);
+      border: 1px solid rgba(142, 196, 255, 0.2);
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      white-space: nowrap;
+    }
+
+    .capsule strong {
+      color: var(--text);
+      margin-left: 6px;
+    }
+
+    .stats-panel {
+      grid-column: 1 / 2;
+      padding: 14px 16px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(120px, 1fr));
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .metric {
+      background: linear-gradient(170deg, rgba(24, 42, 71, 0.72), rgba(9, 18, 36, 0.5));
+      border: 1px solid rgba(120, 180, 255, 0.2);
+      border-radius: 14px;
+      padding: 10px 12px;
+      min-height: 84px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .metric::before {
+      content: "";
+      position: absolute;
+      inset: auto -20% -45% -20%;
+      height: 80%;
+      background: radial-gradient(circle, rgba(0, 212, 255, 0.22), transparent 60%);
+      pointer-events: none;
+    }
+
+    .metric .label {
+      color: var(--text-dim);
+      font-size: 0.78rem;
+      letter-spacing: 0.04em;
+      margin-bottom: 6px;
+    }
+
+    .metric .value {
+      font-size: 1.45rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .metric .sub {
+      margin-top: 6px;
+      font-size: 0.78rem;
+      color: #8bb0dc;
+    }
+
+    .bar-card {
+      grid-column: span 2;
+      background: linear-gradient(165deg, rgba(20, 34, 60, 0.7), rgba(8, 15, 28, 0.65));
+      border: 1px solid rgba(102, 165, 251, 0.25);
+      border-radius: 14px;
+      padding: 10px 12px;
+      min-height: 84px;
+    }
+
+    .bar-title {
+      margin: 0 0 8px;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+    }
+
+    .bars {
+      display: grid;
+      gap: 7px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 58px 1fr 38px;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.78rem;
+    }
+
+    .bar-track {
+      position: relative;
+      height: 8px;
+      background: rgba(130, 174, 238, 0.12);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 0;
+      border-radius: inherit;
+      box-shadow: 0 0 14px currentColor;
+      animation: growBar 1.3s ease forwards;
+    }
+
+    @keyframes growBar {
+      from { width: 0; }
+      to { width: var(--w); }
+    }
+
+    .graph-card {
+      grid-column: 1 / 2;
+      grid-row: 3 / 4;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .graph-toolbar {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      z-index: 3;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      border: 1px solid rgba(145, 198, 255, 0.3);
+      background: rgba(5, 19, 41, 0.76);
+      color: var(--text-dim);
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+
+    .chip.active,
+    .chip:hover {
+      color: var(--text);
+      border-color: rgba(144, 240, 255, 0.6);
+      box-shadow: 0 0 14px rgba(0, 212, 255, 0.28);
+      transform: translateY(-1px);
+    }
+
+    #graph {
+      width: 100%;
+      height: 100%;
+      min-height: 400px;
+    }
+
+    .legend {
+      position: absolute;
+      right: 12px;
+      bottom: 12px;
+      z-index: 3;
+      background: rgba(7, 20, 40, 0.75);
+      border: 1px solid rgba(131, 189, 255, 0.24);
+      border-radius: 12px;
+      padding: 10px;
+      display: grid;
+      gap: 6px;
+      font-size: 0.74rem;
+      color: var(--text-dim);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      box-shadow: 0 0 9px currentColor;
+    }
+
+    .sidebar {
+      grid-column: 2 / 3;
+      grid-row: 2 / 4;
+      padding: 16px;
+      overflow: auto;
+      position: relative;
+    }
+
+    .sidebar h2 {
+      margin: 0;
+      font-size: 1.1rem;
+      letter-spacing: 0.02em;
+    }
+
+    .status-badge {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.74rem;
+      border: 1px solid rgba(141, 199, 255, 0.35);
+      background: rgba(14, 36, 62, 0.75);
+      color: #cce6ff;
+    }
+
+    .section-title {
+      margin: 16px 0 8px;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .desc {
+      margin: 10px 0 0;
+      color: #dcecff;
+      line-height: 1.55;
+      font-size: 0.9rem;
+    }
+
+    .kv {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 8px;
+    }
+
+    .kv li {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 0.84rem;
+      color: #cde4ff;
+      padding-bottom: 6px;
+      border-bottom: 1px dashed rgba(128, 176, 243, 0.18);
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .tag {
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      border: 1px solid rgba(147, 209, 255, 0.28);
+      background: rgba(12, 31, 56, 0.8);
+      color: #d9eeff;
+    }
+
+    .link-btn {
+      display: inline-flex;
+      margin-top: 10px;
+      text-decoration: none;
+      color: #071322;
+      font-weight: 700;
+      font-size: 0.82rem;
+      padding: 8px 12px;
+      background: linear-gradient(135deg, #7ce2ff, #7df8ce);
+      border-radius: 10px;
+      box-shadow: 0 0 18px rgba(48, 230, 255, 0.35);
+    }
+
+    .hint {
+      color: #9bb8da;
+      font-size: 0.82rem;
+      margin-top: 8px;
+    }
+
+    .tooltip {
+      position: fixed;
+      pointer-events: none;
+      background: rgba(9, 22, 44, 0.95);
+      border: 1px solid rgba(140, 196, 255, 0.32);
+      color: #dbedff;
+      font-size: 0.78rem;
+      border-radius: 10px;
+      padding: 7px 9px;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      max-width: 220px;
+      z-index: 10;
+      line-height: 1.45;
+    }
+
+    @media (max-width: 1120px) {
+      body { overflow: auto; }
+      .dashboard {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto minmax(420px, 60vh) auto;
+        height: auto;
+        min-height: 100vh;
+      }
+
+      .stats-panel { grid-column: 1 / 2; }
+      .graph-card { grid-row: 3 / 4; }
+      .sidebar {
+        grid-column: 1 / 2;
+        grid-row: 4 / 5;
+        max-height: none;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .dashboard { padding: 12px; gap: 12px; }
+      .header { flex-direction: column; align-items: flex-start; }
+      .status-capsule { justify-content: flex-start; }
+      .stats-panel {
+        grid-template-columns: 1fr 1fr;
+      }
+      .bar-card { grid-column: 1 / -1; }
+      .legend { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard">
+    <header class="header glass">
+      <div class="title-wrap">
+        <h1>醫師 × AI 管家 專案神經網路控制台</h1>
+        <p>整體知識管理與專案體系即時可視化 ｜ 點擊節點查看詳細資訊</p>
+      </div>
+      <div class="status-capsule" id="capsules"></div>
+    </header>
+
+    <section class="stats-panel glass" id="statsPanel">
+      <article class="metric">
+        <div class="label">總節點數</div>
+        <div class="value" id="nodeCount">0</div>
+        <div class="sub">專案 + 子任務 + 知識體系 + 基礎設施</div>
+      </article>
+      <article class="metric">
+        <div class="label">核心專案</div>
+        <div class="value" id="projectCount">0</div>
+        <div class="sub">一圈主節點</div>
+      </article>
+      <article class="metric">
+        <div class="label">運行狀態</div>
+        <div class="value" id="activeCount">0</div>
+        <div class="sub">進行中 + 持續擴充 + 穩定運行</div>
+      </article>
+      <article class="bar-card">
+        <h3 class="bar-title">專案狀態分佈</h3>
+        <div class="bars" id="statusBars"></div>
+      </article>
+    </section>
+
+    <section class="graph-card glass">
+      <div class="graph-toolbar" id="filters"></div>
+      <svg id="graph" aria-label="專案力導向圖"></svg>
+      <div class="legend" id="legend"></div>
+    </section>
+
+    <aside class="sidebar glass" id="sidebar"></aside>
+  </div>
+
+  <div class="tooltip" id="tooltip"></div>
+
+  <script>
+    const palette = {
+      center: "#00d4ff",
+      project: "#5f9aff",
+      sub: "#2df5d4",
+      knowledge: "#ff9b66",
+      infra: "#b487ff"
+    };
+
+    const nodes = [
+      {
+        id: "core",
+        name: "醫師 × AI 管家",
+        layer: "center",
+        group: "中心",
+        status: "核心",
+        desc: "以 OpenClaw 為核心的 AI 管家系統，串起所有專案、知識筆記與基礎設施。",
+        importance: 42,
+        metrics: { "專案": "8 個面向", "知識庫": "3 大領域", "基礎設施": "5 項" },
+        tags: ["OpenClaw", "Jarvis", "Obsidian", "整體協同"]
+      },
+
+      {
+        id: "trade_bible",
+        name: "交易聖經（Transformer）",
+        layer: "project",
+        group: "核心專案",
+        status: "✅ V10 完成，待決策 Phase 3",
+        desc: "從 V2 到 V10 的量化迭代主軸，V9b-Ens5 Top5 目前最佳。",
+        importance: 34,
+        metrics: { "迭代版本": "V2 → V10", "方法": "Transformer + Ensemble", "現況": "持續優化中" },
+        tags: ["FinLab", "回測驗證", "GPU 訓練"],
+      },
+      {
+        id: "ig_med",
+        name: "IG 醫美粉專",
+        layer: "project",
+        group: "核心專案",
+        status: "🔄 進行中",
+        desc: "自動發文導流本業，9 主題庫存（1 已發、8 待審）。",
+        importance: 24,
+        metrics: { "貼文庫": "多主題", "已發": "部分", "串接": "Meta API" },
+        tags: ["內容自動化", "Meta API", "流量轉換"]
+      },
+      {
+        id: "pocus",
+        name: "POCUS 超音波筆記庫",
+        layer: "project",
+        group: "核心專案",
+        status: "🔄 持續擴充",
+        desc: "已完成 7 主題，未來 20+ 主題，持續沉澱臨床可用知識。",
+        importance: 28,
+        metrics: { "已完成": "7", "規劃中": "20+", "技能": "pocus-to-obsidian" },
+        tags: ["POCUS 101", "臨床知識", "GitHub Pages"],
+        link: "https://drvictorchen.github.io/rush-exam/"
+      },
+      {
+        id: "bitfinex",
+        name: "Bitfinex 自動放貸",
+        layer: "project",
+        group: "核心專案",
+        status: "⏸ 等入金",
+        desc: "自建 Python 自動放貸機器人，完整開發與測試流程。",
+        importance: 20,
+        metrics: { "開發": "完成", "測試": "全數通過", "階段": "準備上線" },
+        tags: ["Python", "自動化", "風控"]
+      },
+      {
+        id: "trading_system",
+        name: "自動下單系統",
+        layer: "project",
+        group: "核心專案",
+        status: "⏸ 等開盤",
+        desc: "將量化策略自動化執行，減少人為干預。",
+        importance: 22,
+        metrics: { "策略": "多策略組合", "模式": "自動執行", "狀態": "待市場啟動" },
+        tags: ["執行引擎", "策略自動化"]
+      },
+      {
+        id: "poly",
+        name: "Polymarket 套利",
+        layer: "project",
+        group: "核心專案",
+        status: "📋 計劃階段",
+        desc: "組合邏輯套利策略，目前在策略框架設計。",
+        importance: 16,
+        metrics: { "模式": "組合套利", "階段": "研究 / 計劃" },
+        tags: ["套利", "事件市場"]
+      },
+      {
+        id: "apple_notes",
+        name: "Apple Notes 精煉",
+        layer: "project",
+        group: "核心專案",
+        status: "✅ 穩定運行",
+        desc: "JXA 到 Obsidian 的自動精煉與 #todo 偵測流程。",
+        importance: 21,
+        metrics: { "資料流": "JXA → Obsidian", "功能": "#todo 偵測", "狀態": "穩定" },
+        tags: ["知識精煉", "自動化"]
+      },
+      {
+        id: "speech",
+        name: "養蝦心得（OpenClaw 演講）",
+        layer: "project",
+        group: "核心專案",
+        status: "📝 草稿",
+        desc: "心路歷程、視覺化總覽、AWS 部署指南整理中。",
+        importance: 15,
+        metrics: { "內容": "故事 + 技術", "狀態": "草稿" },
+        tags: ["演講", "敘事", "OpenClaw"]
+      },
+
+      { id: "v9b", name: "V9b Ensemble", layer: "sub", group: "子專案", status: "最佳表現", desc: "現階段表現最優的模型組合", importance: 12, tags: ["Ensemble", "Best"] },
+      { id: "v10", name: "V10 實驗", layer: "sub", group: "子專案", status: "完成", desc: "新架構實驗，持續迭代中", importance: 11, tags: ["完成", "迭代"] },
+      { id: "exp_window", name: "Expanding Window", layer: "sub", group: "子專案", status: "研究", desc: "時序擴展視窗訓練設計", importance: 10, tags: ["時序"] },
+      { id: "meta_learner", name: "Meta-Learner", layer: "sub", group: "子專案", status: "研究", desc: "模型融合與權重調配", importance: 10, tags: ["Ensemble"] },
+      { id: "phase_regime", name: "Phase1 Regime", layer: "sub", group: "子專案", status: "研究", desc: "市場 regime 偵測", importance: 10, tags: ["Regime"] },
+      { id: "ig_queue", name: "貼文排程庫", layer: "sub", group: "子專案", status: "待審", desc: "多篇待審，持續擴充內容", importance: 9, tags: ["IG"] },
+      { id: "meta_api", name: "Meta API 串接", layer: "sub", group: "子專案", status: "阻塞", desc: "卡裝置驗證信任", importance: 9, tags: ["API", "阻塞"] },
+      { id: "rush", name: "RUSH Exam", layer: "sub", group: "子專案", status: "完成", desc: "POCUS 關鍵急診流程", importance: 9, tags: ["POCUS"] },
+      { id: "efast", name: "eFAST", layer: "sub", group: "子專案", status: "完成", desc: "創傷快速超音波", importance: 9, tags: ["POCUS"] },
+      { id: "dvt", name: "DVT / Renal / Aorta", layer: "sub", group: "子專案", status: "規劃", desc: "下一波 20+ 主題入口", importance: 9, tags: ["待擴充"] },
+
+      { id: "med_knowledge", name: "醫學知識體系", layer: "knowledge", group: "知識體系", status: "持續更新", desc: "急診、皮膚科、醫美、EBM 支撐臨床與內容輸出。", importance: 18, tags: ["急診", "皮膚科", "醫美", "EBM"] },
+      { id: "ai_knowledge", name: "AI 工具與開發", layer: "knowledge", group: "知識體系", status: "持續更新", desc: "OpenClaw / Claude 筆記、Context 工程、Coding Agent 工作流。", importance: 18, tags: ["OpenClaw", "Claude", "自動化"] },
+      { id: "trade_knowledge", name: "交易知識體系", layer: "knowledge", group: "知識體系", status: "持續更新", desc: "主動交易、心理與量化工具沉澱。", importance: 17, tags: ["瘋狗流", "心理", "量化工具"] },
+
+      { id: "macmini", name: "Mac mini", layer: "infra", group: "基礎設施", status: "運行中", desc: "回測運算 + 知識庫 + 報告伺服器", importance: 14, tags: ["本地運算"] },
+      { id: "win4060", name: "Windows GPU 主機", layer: "infra", group: "基礎設施", status: "運行中", desc: "深度學習訓練主機", importance: 14, tags: ["GPU"] },
+      { id: "openclaw", name: "OpenClaw + Jarvis", layer: "infra", group: "基礎設施", status: "運行中", desc: "AI 管家串接所有流程", importance: 16, tags: ["AI 管理"] },
+      { id: "telegram", name: "Telegram", layer: "infra", group: "基礎設施", status: "運行中", desc: "主要溝通介面", importance: 12, tags: ["通訊"] },
+      { id: "github", name: "GitHub", layer: "infra", group: "基礎設施", status: "運行中", desc: "程式碼託管與 Pages 分享", importance: 13, tags: ["版本管理"] }
+    ];
+
+    const links = [
+      ...[
+        "trade_bible", "ig_med", "pocus", "bitfinex", "trading_system", "poly", "apple_notes", "speech",
+        "med_knowledge", "ai_knowledge", "trade_knowledge",
+        "macmini", "win4060", "openclaw", "telegram", "github"
+      ].map(id => ({ source: "core", target: id, strength: 0.55 })),
+
+      { source: "trade_bible", target: "v9b", strength: 0.5 },
+      { source: "trade_bible", target: "v10", strength: 0.44 },
+      { source: "trade_bible", target: "exp_window", strength: 0.42 },
+      { source: "trade_bible", target: "meta_learner", strength: 0.42 },
+      { source: "trade_bible", target: "phase_regime", strength: 0.42 },
+
+      { source: "ig_med", target: "ig_queue", strength: 0.42 },
+      { source: "ig_med", target: "meta_api", strength: 0.42 },
+
+      { source: "pocus", target: "rush", strength: 0.4 },
+      { source: "pocus", target: "efast", strength: 0.4 },
+      { source: "pocus", target: "dvt", strength: 0.35 },
+
+      { source: "trade_bible", target: "trade_knowledge", strength: 0.35 },
+      { source: "ig_med", target: "med_knowledge", strength: 0.3 },
+      { source: "pocus", target: "med_knowledge", strength: 0.45 },
+      { source: "apple_notes", target: "ai_knowledge", strength: 0.3 },
+      { source: "speech", target: "ai_knowledge", strength: 0.3 },
+
+      { source: "trade_bible", target: "macmini", strength: 0.25 },
+      { source: "trade_bible", target: "win4060", strength: 0.25 },
+      { source: "ig_med", target: "github", strength: 0.2 },
+      { source: "pocus", target: "github", strength: 0.24 },
+      { source: "openclaw", target: "telegram", strength: 0.25 },
+      { source: "openclaw", target: "ai_knowledge", strength: 0.25 }
+    ];
+
+    const statusColor = status => {
+      if (/✅|完成|穩定/.test(status)) return "#3dff89";
+      if (/🔄|持續|進行/.test(status)) return "#00d4ff";
+      if (/⏸|等待|阻塞/.test(status)) return "#ffcc66";
+      if (/📋|計劃|草稿|規劃/.test(status)) return "#ff8b5a";
+      return "#9cc4ff";
+    };
+
+    const statusSimple = s => {
+      if (/✅|完成|穩定/.test(s)) return "已完成";
+      if (/🔄|持續|進行/.test(s)) return "進行中";
+      if (/⏸|等待|阻塞/.test(s)) return "暫停中";
+      if (/📋|計劃|草稿|規劃/.test(s)) return "規劃中";
+      return "其他";
+    };
+
+    const layerLabel = {
+      center: "中心",
+      project: "核心專案",
+      sub: "子專案",
+      knowledge: "知識體系",
+      infra: "基礎設施"
+    };
+
+    const sidebar = d3.select("#sidebar");
+    const tooltip = d3.select("#tooltip");
+
+    function renderSidebar(node) {
+      if (!node) {
+        sidebar.html(`
+          <h2>節點詳細資訊</h2>
+          <p class="hint">請點擊主圖任一節點，這裡會顯示該專案/知識層的細節、關鍵指標與關聯資訊。</p>
+        `);
+        return;
+      }
+
+      const metrics = node.metrics
+        ? Object.entries(node.metrics)
+            .map(([k, v]) => `<li><span>${k}</span><strong>${v}</strong></li>`)
+            .join("")
+        : `<li><span>重點</span><strong>持續追蹤中</strong></li>`;
+
+      const tags = (node.tags || []).map(t => `<span class="tag">${t}</span>`).join("");
+      const link = node.link ? `<a class="link-btn" href="${node.link}" target="_blank" rel="noopener">開啟相關連結</a>` : "";
+
+      sidebar.html(`
+        <h2>${node.name}</h2>
+        <span class="status-badge" style="border-color:${statusColor(node.status)}66;color:${statusColor(node.status)}">${node.status}</span>
+        <p class="desc">${node.desc || "無補充描述"}</p>
+
+        <h3 class="section-title">關鍵指標</h3>
+        <ul class="kv">${metrics}</ul>
+
+        <h3 class="section-title">分類與標籤</h3>
+        <div class="tags">
+          <span class="tag">${layerLabel[node.layer] || node.layer}</span>
+          ${tags}
+        </div>
+        ${link}
+      `);
+    }
+
+    function buildStats() {
+      const projects = nodes.filter(d => d.layer === "project");
+      const running = projects.filter(d => /🔄|持續|穩定|進行/.test(d.status));
+
+      d3.select("#nodeCount").text(nodes.length);
+      d3.select("#projectCount").text(projects.length);
+      d3.select("#activeCount").text(running.length);
+
+      const statusBuckets = d3.rollups(projects, v => v.length, d => statusSimple(d.status));
+      const total = projects.length;
+      const statusOrder = ["已完成", "進行中", "暫停中", "規劃中", "其他"];
+      const barColor = {
+        "已完成": "#3dff89",
+        "進行中": "#00d4ff",
+        "暫停中": "#ffcc66",
+        "規劃中": "#ff8b5a",
+        "其他": "#9cc4ff"
+      };
+
+      const map = new Map(statusBuckets);
+      const bars = statusOrder.map(k => [k, map.get(k) || 0]).filter(([, v]) => v > 0);
+      const barWrap = d3.select("#statusBars");
+
+      barWrap.selectAll(".bar-row")
+        .data(bars)
+        .join("div")
+        .attr("class", "bar-row")
+        .html(([k, v]) => {
+          const pct = ((v / total) * 100).toFixed(0);
+          return `
+            <div>${k}</div>
+            <div class="bar-track">
+              <div class="bar-fill" style="--w:${pct}%;color:${barColor[k]};background:${barColor[k]}"></div>
+            </div>
+            <div>${v}</div>
+          `;
+        });
+
+      const capsules = [
+        ["專案總數", projects.length],
+        ["已完成", map.get("已完成") || 0],
+        ["進行中", map.get("進行中") || 0],
+        ["規劃/草稿", (map.get("規劃中") || 0) + (map.get("其他") || 0)]
+      ];
+
+      d3.select("#capsules").selectAll("div")
+        .data(capsules)
+        .join("div")
+        .attr("class", "capsule")
+        .html(([k, v]) => `${k}<strong>${v}</strong>`);
+    }
+
+    function buildLegend() {
+      const items = [
+        ["中心節點", palette.center],
+        ["核心專案", palette.project],
+        ["子專案", palette.sub],
+        ["知識體系", palette.knowledge],
+        ["基礎設施", palette.infra]
+      ];
+
+      d3.select("#legend")
+        .selectAll("div")
+        .data(items)
+        .join("div")
+        .attr("class", "legend-item")
+        .html(([name, c]) => `<span class="dot" style="background:${c};color:${c}"></span>${name}`);
+    }
+
+    function nodeRadius(d) {
+      if (d.layer === "center") return 26;
+      return Math.max(7, d.importance * 0.5);
+    }
+
+    function drawGraph(filterLayer = "all") {
+      const svg = d3.select("#graph");
+      svg.selectAll("*").remove();
+
+      const { width, height } = svg.node().getBoundingClientRect();
+      svg.attr("viewBox", [0, 0, width, height]);
+
+      const shownNodes = nodes.filter(n => filterLayer === "all" || n.layer === filterLayer || n.id === "core");
+      const nodeSet = new Set(shownNodes.map(n => n.id));
+      const shownLinks = links.filter(l => nodeSet.has(l.source) && nodeSet.has(l.target));
+
+      const g = svg.append("g");
+      const glow = svg.append("defs")
+        .append("filter")
+        .attr("id", "glow");
+
+      glow.append("feGaussianBlur")
+        .attr("stdDeviation", "3.5")
+        .attr("result", "blur");
+
+      glow.append("feMerge")
+        .selectAll("feMergeNode")
+        .data(["blur", "SourceGraphic"])
+        .join("feMergeNode")
+        .attr("in", d => d);
+
+      const link = g.append("g")
+        .attr("stroke", "var(--line)")
+        .attr("stroke-opacity", 0.85)
+        .selectAll("line")
+        .data(shownLinks)
+        .join("line")
+        .attr("stroke-width", d => 0.6 + d.strength * 2.1)
+        .attr("stroke-linecap", "round");
+
+      const node = g.append("g")
+        .selectAll("g")
+        .data(shownNodes)
+        .join("g")
+        .style("cursor", "pointer");
+
+      node.append("circle")
+        .attr("r", d => nodeRadius(d))
+        .attr("fill", d => palette[d.layer])
+        .attr("fill-opacity", d => (d.layer === "sub" ? 0.8 : 0.92))
+        .attr("stroke", "#d8efff")
+        .attr("stroke-width", d => (d.layer === "center" ? 1.7 : 1))
+        .attr("filter", "url(#glow)");
+
+      node.append("text")
+        .text(d => d.name)
+        .attr("text-anchor", "middle")
+        .attr("dy", d => -nodeRadius(d) - 6)
+        .attr("fill", "#d9ecff")
+        .attr("font-size", d => d.layer === "center" ? 13 : 11)
+        .attr("font-weight", d => d.layer === "project" || d.layer === "center" ? 700 : 500)
+        .attr("paint-order", "stroke")
+        .attr("stroke", "rgba(2,8,18,0.9)")
+        .attr("stroke-width", 2.8);
+
+      const simulation = d3.forceSimulation(shownNodes)
+        .force("link", d3.forceLink(shownLinks).id(d => d.id).distance(d => 55 + (1 - d.strength) * 90))
+        .force("charge", d3.forceManyBody().strength(d => (d.layer === "center" ? -780 : -320)))
+        .force("collision", d3.forceCollide().radius(d => nodeRadius(d) + 8).strength(1))
+        .force("center", d3.forceCenter(width / 2, height / 2))
+        .force("x", d3.forceX(width / 2).strength(0.03))
+        .force("y", d3.forceY(height / 2).strength(0.03));
+
+      simulation.on("tick", () => {
+        link
+          .attr("x1", d => d.source.x)
+          .attr("y1", d => d.source.y)
+          .attr("x2", d => d.target.x)
+          .attr("y2", d => d.target.y);
+
+        node.attr("transform", d => `translate(${d.x},${d.y})`);
+      });
+
+      const drag = d3.drag()
+        .on("start", (event, d) => {
+          if (!event.active) simulation.alphaTarget(0.25).restart();
+          d.fx = d.x;
+          d.fy = d.y;
+        })
+        .on("drag", (event, d) => {
+          d.fx = event.x;
+          d.fy = event.y;
+        })
+        .on("end", (event, d) => {
+          if (!event.active) simulation.alphaTarget(0);
+          d.fx = null;
+          d.fy = null;
+        });
+
+      node.call(drag)
+        .on("click", (_, d) => {
+          renderSidebar(d);
+          node.select("circle")
+            .attr("stroke", p => p.id === d.id ? "#ffffff" : "#d8efff")
+            .attr("stroke-width", p => p.id === d.id ? 2.4 : (p.layer === "center" ? 1.7 : 1));
+        })
+        .on("mouseenter", (event, d) => {
+          link.attr("stroke", l => (l.source.id === d.id || l.target.id === d.id) ? "var(--line-strong)" : "var(--line)");
+          tooltip
+            .style("opacity", 1)
+            .style("transform", "translateY(0)")
+            .html(`<strong>${d.name}</strong><br>${d.status}<br>${layerLabel[d.layer] || d.layer}`);
+        })
+        .on("mousemove", event => {
+          tooltip
+            .style("left", `${event.clientX + 14}px`)
+            .style("top", `${event.clientY + 14}px`);
+        })
+        .on("mouseleave", () => {
+          link.attr("stroke", "var(--line)");
+          tooltip.style("opacity", 0).style("transform", "translateY(6px)");
+        });
+
+      const zoom = d3.zoom()
+        .scaleExtent([0.35, 2.6])
+        .on("zoom", event => g.attr("transform", event.transform));
+
+      svg.call(zoom);
+    }
+
+    function initFilters() {
+      const options = [
+        ["all", "全部"],
+        ["project", "核心專案"],
+        ["knowledge", "知識體系"],
+        ["infra", "基礎設施"],
+        ["sub", "子專案"]
+      ];
+
+      let active = "all";
+      const wrap = d3.select("#filters");
+
+      wrap.selectAll("button")
+        .data(options)
+        .join("button")
+        .attr("class", d => `chip ${d[0] === active ? "active" : ""}`)
+        .text(d => d[1])
+        .on("click", function(_, d) {
+          active = d[0];
+          wrap.selectAll(".chip").classed("active", p => p[0] === active);
+          drawGraph(active);
+        });
+    }
+
+    function boot() {
+      buildStats();
+      buildLegend();
+      initFilters();
+      drawGraph();
+      renderSidebar(nodes[0]);
+
+      let resizeTimer;
+      window.addEventListener("resize", () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => drawGraph(d3.select("#filters .chip.active").datum()?.[0] || "all"), 180);
+      });
+    }
+
+    boot();
+  </script>
+</body>
+</html>
