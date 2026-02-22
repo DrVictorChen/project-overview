@@ -491,176 +491,165 @@
   <script>
     const palette = {
       center: "#00d4ff",
+      category: "#ff9b66",
       project: "#5f9aff",
-      sub: "#2df5d4",
-      knowledge: "#ff9b66",
       infra: "#b487ff"
     };
 
     const nodes = [
+      // === 中心 ===
       {
-        id: "core",
-        name: "醫師 × AI 管家",
-        layer: "center",
-        group: "中心",
-        status: "核心",
-        desc: "AI 管家中樞，串起所有專案、知識筆記與基礎設施。",
+        id: "core", name: "醫師 × AI 管家", layer: "center", group: "中心", status: "核心",
+        desc: "以 OpenClaw 為核心的 AI 管家系統，串起投資、醫學、自動化三大領域。",
         importance: 42,
-        metrics: { "專案面向": "8", "知識面向": "3", "基礎設施": "5" },
+        metrics: { "專案": "8 個面向", "知識庫": "3 大領域", "基礎設施": "6 項" },
         tags: ["OpenClaw", "Jarvis", "Obsidian", "整體協同"]
       },
 
+      // === 分類層（對應 Obsidian 頂層資料夾）===
       {
-        id: "trade_bible",
-        name: "交易聖經（Transformer）",
-        layer: "project",
-        group: "核心專案",
-        status: "✅ V10 完成，待決策 Phase 3",
-        desc: "從 V2 到 V10 的量化迭代主軸，V9b Ensemble 目前最佳。",
-        importance: 34,
-        metrics: { "迭代版本": "V2 → V10", "方法": "Transformer + Ensemble", "現況": "持續優化中" },
-        tags: ["FinLab API", "Mac mini 回測", "Windows GPU"],
+        id: "cat_trade", name: "📈 交易", layer: "category", group: "分類", status: "活躍",
+        desc: "量化交易、虛擬貨幣、主動交易——所有跟投資相關的專案都在這。",
+        importance: 30,
+        metrics: { "子專案": "4", "Obsidian 路徑": "交易/" },
+        tags: ["量化交易", "虛擬貨幣", "主動交易"],
+        children: ["交易聖經 (V2→V10 Transformer 迭代)", "自動下單系統", "Bitfinex 自動放貸", "Polymarket 套利"]
       },
       {
-        id: "ig_med",
-        name: "IG 醫美粉專",
-        layer: "project",
-        group: "核心專案",
-        status: "🔄 進行中",
-        desc: "自動發文導流本業，9 主題庫存（1 已發、8 待審）。",
-        importance: 24,
-        metrics: { "貼文庫": "多主題", "已發": "部分", "串接": "Meta API" },
-        tags: ["內容自動化", "Meta API", "流量轉換"]
-      },
-      {
-        id: "pocus",
-        name: "POCUS 超音波筆記庫",
-        layer: "project",
-        group: "核心專案",
-        status: "🔄 持續擴充",
-        desc: "已完成 7 主題，未來 20+ 主題，持續沉澱臨床可用知識。",
+        id: "cat_med", name: "🩺 醫學", layer: "category", group: "分類", status: "活躍",
+        desc: "急診超音波、皮膚科、醫美、EBM——臨床知識的系統化整理。",
         importance: 28,
-        metrics: { "已完成": "7", "規劃中": "20+", "技能": "pocus-to-obsidian" },
-        tags: ["POCUS 101", "臨床知識", "GitHub Pages"],
-        link: "https://drvictorchen.github.io/rush-exam/"
+        metrics: { "子領域": "4", "Obsidian 路徑": "醫學/" },
+        tags: ["急診", "超音波", "皮膚科", "醫美", "EBM"],
+        children: ["POCUS 超音波筆記庫 (7/20+ 主題)", "急診流程筆記", "皮膚科用藥", "醫美仿單與技巧"]
       },
       {
-        id: "bitfinex",
-        name: "Bitfinex 自動放貸",
-        layer: "project",
-        group: "核心專案",
-        status: "⏸ 等入金",
-        desc: "自建 Python 自動放貸機器人，完整開發與測試流程。",
-        importance: 20,
-        metrics: { "開發": "完成", "測試": "全數通過", "階段": "準備上線" },
-        tags: ["Python", "Lending", "風控"]
+        id: "cat_ai", name: "🤖 AI 工具與開發", layer: "category", group: "分類", status: "活躍",
+        desc: "OpenClaw、Claude、自動化工作流、AI 開發技巧——所有 AI 相關知識與工具。",
+        importance: 26,
+        metrics: { "子領域": "4", "Obsidian 路徑": "AI工具與開發/" },
+        tags: ["OpenClaw", "Claude", "自動化", "Coding Agent"],
+        children: ["OpenClaw 與 Claude 系列筆記", "AI 開發技巧", "自動化工作流", "Apple Notes 精煉"]
       },
       {
-        id: "trading_system",
-        name: "自動下單系統",
-        layer: "project",
-        group: "核心專案",
-        status: "⏸ 等開盤",
-        desc: "將量化策略自動化執行，減少人為干預。",
+        id: "cat_content", name: "📱 內容與分享", layer: "category", group: "分類", status: "活躍",
+        desc: "IG 醫美粉專、養蝦心得演講、GitHub Pages 分享站——對外輸出的管道。",
         importance: 22,
-        metrics: { "策略": "多策略組合", "模式": "自動執行", "狀態": "待市場啟動" },
-        tags: ["執行引擎", "策略自動化"]
+        metrics: { "子專案": "3", "Obsidian 路徑": "醫美粉專/ + 技術筆記/養蝦心得/" },
+        tags: ["IG", "演講", "GitHub Pages"],
+        children: ["IG 醫美粉專 (9 主題庫存)", "養蝦心得演講素材", "RUSH Exam 分享站"]
+      },
+
+      // === 核心專案（掛在分類下）===
+      {
+        id: "trade_bible", name: "交易聖經", layer: "project", group: "交易",
+        status: "✅ V10 完成，待決策 Phase 3",
+        desc: "Transformer 量化策略，從 V2 迭代到 V10。V9b 目前最佳。",
+        importance: 28,
+        metrics: { "迭代": "V2 → V10", "最佳版本": "V9b Ensemble", "方法": "Transformer + FinLab 回測" },
+        tags: ["FinLab", "Transformer", "GPU 訓練"],
+        children: ["V9b Ensemble（現最佳）", "V10 三路實驗（已完成）", "Expanding Window", "Meta-Learner", "Phase1 Regime 偵測"]
       },
       {
-        id: "poly",
-        name: "Polymarket 套利",
-        layer: "project",
-        group: "核心專案",
+        id: "trading_system", name: "自動下單系統", layer: "project", group: "交易",
+        status: "⏸ 等開盤",
+        desc: "將研究好的策略自動化執行買賣。",
+        importance: 18,
+        metrics: { "策略": "多策略組合", "模式": "自動執行" },
+        tags: ["策略執行", "自動化"]
+      },
+      {
+        id: "bitfinex", name: "Bitfinex 自動放貸", layer: "project", group: "交易",
+        status: "⏸ 等入金",
+        desc: "自建 Python 自動放貸機器人，開發與測試完成。",
+        importance: 17,
+        metrics: { "開發": "Sprint 1+2 完成", "測試": "全數通過" },
+        tags: ["Python", "風控", "被動收入"]
+      },
+      {
+        id: "poly", name: "Polymarket 套利", layer: "project", group: "交易",
         status: "📋 計劃階段",
-        desc: "組合邏輯套利策略，目前在策略框架設計。",
-        importance: 16,
-        metrics: { "模式": "組合套利", "階段": "研究 / 計劃" },
+        desc: "組合邏輯套利策略，在預測市場尋找定價錯誤。",
+        importance: 13,
+        metrics: { "模式": "組合套利", "階段": "研究" },
         tags: ["套利", "事件市場"]
       },
       {
-        id: "apple_notes",
-        name: "Apple Notes 精煉",
-        layer: "project",
-        group: "核心專案",
-        status: "✅ 穩定運行",
-        desc: "JXA 到 Obsidian 的自動精煉與 #todo 偵測流程。",
-        importance: 21,
-        metrics: { "資料流": "JXA → Obsidian", "功能": "#todo 偵測", "狀態": "穩定" },
-        tags: ["知識精煉", "自動化"]
+        id: "pocus", name: "POCUS 超音波筆記庫", layer: "project", group: "醫學",
+        status: "🔄 持續擴充",
+        desc: "從 POCUS 101 爬取文章，翻譯整理成中英對照 Obsidian 筆記。",
+        importance: 24,
+        metrics: { "已完成": "7 主題", "規劃中": "20+", "自建技能": "pocus-to-obsidian" },
+        tags: ["POCUS 101", "GitHub Pages"],
+        link: "https://drvictorchen.github.io/rush-exam/",
+        children: ["✅ RUSH Exam", "✅ Shoulder", "✅ Cardiac", "✅ Lung", "✅ eFAST", "✅ Knee", "✅ Ocular", "⏳ DVT / Renal / Aorta 等 20+"]
       },
       {
-        id: "speech",
-        name: "養蝦心得（OpenClaw 演講）",
-        layer: "project",
-        group: "核心專案",
-        status: "📝 草稿",
-        desc: "心路歷程、視覺化總覽、AWS 部署指南整理中。",
+        id: "ig_med", name: "IG 醫美粉專", layer: "project", group: "內容",
+        status: "🔄 進行中",
+        desc: "經營 Instagram 醫美帳號，定期發圖文內容導流本業。",
+        importance: 20,
+        metrics: { "貼文庫": "9 主題", "已發": "1", "串接": "Meta API" },
+        tags: ["內容行銷", "自動發文"],
+        children: ["皮秒雷射（已發）", "玻尿酸、肉毒、電波等 8 篇待審", "Meta API 自動排程串接中"]
+      },
+      {
+        id: "apple_notes", name: "Apple Notes 精煉", layer: "project", group: "AI工具",
+        status: "✅ 穩定運行",
+        desc: "Apple Notes → Obsidian 自動精煉，每晚 22:30 執行。",
+        importance: 18,
+        metrics: { "流程": "JXA → AI 精煉 → Obsidian", "功能": "#todo 偵測" },
+        tags: ["知識精煉", "自動化", "排程"]
+      },
+      {
+        id: "speech", name: "養蝦心得（演講）", layer: "project", group: "內容",
+        status: "📝 草稿精修中",
+        desc: "把使用 AI 管家的實戰經驗整理成演講分享素材。",
         importance: 15,
-        metrics: { "內容": "故事 + 技術", "狀態": "草稿" },
-        tags: ["演講", "敘事", "OpenClaw"]
+        metrics: { "篇幅": "心路歷程 + 視覺化 + AWS 指南", "風格": "零程式背景也看得懂" },
+        tags: ["演講", "OpenClaw", "經驗分享"]
       },
 
-      { id: "v9b", name: "V9b Ensemble", layer: "sub", group: "子專案", status: "最佳表現", desc: "現階段最佳模型組合", importance: 12, tags: ["Top5", "Best"] },
-      { id: "v10", name: "V10", layer: "sub", group: "子專案", status: "完成", desc: "新架構實驗，持續迭代中", importance: 11, tags: ["完成", "待調整"] },
-      { id: "exp_window", name: "Expanding Window", layer: "sub", group: "子專案", status: "研究", desc: "時序擴展視窗訓練設計", importance: 10, tags: ["時序"] },
-      { id: "meta_learner", name: "Meta-Learner", layer: "sub", group: "子專案", status: "研究", desc: "模型融合與權重調配", importance: 10, tags: ["Ensemble"] },
-      { id: "phase_regime", name: "Phase1 Regime", layer: "sub", group: "子專案", status: "研究", desc: "市場 regime 偵測", importance: 10, tags: ["Regime"] },
-      { id: "ig_queue", name: "貼文排程庫", layer: "sub", group: "子專案", status: "待審", desc: "多篇待審，持續擴充內容", importance: 9, tags: ["IG"] },
-      { id: "meta_api", name: "Meta API 串接", layer: "sub", group: "子專案", status: "阻塞", desc: "卡裝置驗證信任", importance: 9, tags: ["API", "阻塞"] },
-      { id: "rush", name: "RUSH Exam", layer: "sub", group: "子專案", status: "完成", desc: "POCUS 關鍵急診流程", importance: 9, tags: ["POCUS"] },
-      { id: "efast", name: "eFAST", layer: "sub", group: "子專案", status: "完成", desc: "創傷快速超音波", importance: 9, tags: ["POCUS"] },
-      { id: "dvt", name: "DVT / Renal / Aorta", layer: "sub", group: "子專案", status: "規劃", desc: "下一波 20+ 主題入口", importance: 9, tags: ["待擴充"] },
-
-      { id: "med_knowledge", name: "醫學知識體系", layer: "knowledge", group: "知識體系", status: "持續更新", desc: "急診、皮膚科、醫美、EBM 支撐臨床與內容輸出。", importance: 18, tags: ["急診", "皮膚科", "醫美", "EBM"] },
-      { id: "ai_knowledge", name: "AI 工具與開發", layer: "knowledge", group: "知識體系", status: "持續更新", desc: "OpenClaw / Claude 筆記、Context 工程、Coding Agent 工作流。", importance: 18, tags: ["OpenClaw", "Claude", "自動化"] },
-      { id: "trade_knowledge", name: "交易知識體系", layer: "knowledge", group: "知識體系", status: "持續更新", desc: "主動交易、心理與量化工具沉澱。", importance: 17, tags: ["瘋狗流", "心理", "量化工具"] },
-
-      { id: "macmini", name: "Mac mini", layer: "infra", group: "基礎設施", status: "運行中", desc: "回測運算 + 知識庫 + 報告伺服器", importance: 14, tags: ["本地運算"] },
-      { id: "win4060", name: "Windows GPU 主機", layer: "infra", group: "基礎設施", status: "運行中", desc: "深度學習訓練主機", importance: 14, tags: ["GPU"] },
-      { id: "openclaw", name: "OpenClaw + Jarvis", layer: "infra", group: "基礎設施", status: "運行中", desc: "AI 管家串接所有流程", importance: 16, tags: ["AI 管理"] },
-      { id: "telegram", name: "Telegram", layer: "infra", group: "基礎設施", status: "運行中", desc: "主要溝通介面", importance: 12, tags: ["通訊"] },
-      { id: "github", name: "GitHub", layer: "infra", group: "基礎設施", status: "運行中", desc: "程式碼託管與 Pages 分享", importance: 13, tags: ["版本管理"] },
-      { id: "obsidian", name: "Obsidian 知識庫", layer: "infra", group: "基礎設施", status: "運行中", desc: "所有專案的知識沉澱終點，筆記、MOC、儀表板的載體", importance: 15, tags: ["知識管理", "第二大腦"] }
+      // === 基礎設施 ===
+      { id: "macmini", name: "Mac mini", layer: "infra", group: "基礎設施", status: "運行中", desc: "回測運算 + 報告伺服器 + 日常開發", importance: 14, tags: ["本地運算"] },
+      { id: "win4060", name: "Windows GPU 主機", layer: "infra", group: "基礎設施", status: "運行中", desc: "RTX 顯卡，深度學習訓練專用", importance: 14, tags: ["GPU 訓練"] },
+      { id: "openclaw", name: "OpenClaw + Jarvis", layer: "infra", group: "基礎設施", status: "運行中", desc: "AI 管家核心，串接所有流程與通訊", importance: 16, tags: ["AI 管家"] },
+      { id: "obsidian", name: "Obsidian 知識庫", layer: "infra", group: "基礎設施", status: "運行中", desc: "所有專案的知識沉澱終點：筆記、MOC、儀表板", importance: 15, tags: ["第二大腦"] },
+      { id: "telegram", name: "Telegram", layer: "infra", group: "基礎設施", status: "運行中", desc: "人機溝通主介面", importance: 12, tags: ["通訊"] },
+      { id: "github", name: "GitHub", layer: "infra", group: "基礎設施", status: "運行中", desc: "程式碼託管 + Pages 公開分享", importance: 13, tags: ["版本管理", "Pages"] }
     ];
 
     const links = [
-      ...[
-        "trade_bible", "ig_med", "pocus", "bitfinex", "trading_system", "poly", "apple_notes", "speech",
-        "med_knowledge", "ai_knowledge", "trade_knowledge",
-        "macmini", "win4060", "openclaw", "telegram", "github", "obsidian"
-      ].map(id => ({ source: "core", target: id, strength: 0.55 })),
+      // 中心 → 分類
+      ...["cat_trade", "cat_med", "cat_ai", "cat_content"].map(id => ({ source: "core", target: id, strength: 0.7 })),
 
-      { source: "trade_bible", target: "v9b", strength: 0.5 },
-      { source: "trade_bible", target: "v10", strength: 0.44 },
-      { source: "trade_bible", target: "exp_window", strength: 0.42 },
-      { source: "trade_bible", target: "meta_learner", strength: 0.42 },
-      { source: "trade_bible", target: "phase_regime", strength: 0.42 },
+      // 中心 → 基礎設施
+      ...["macmini", "win4060", "openclaw", "obsidian", "telegram", "github"].map(id => ({ source: "core", target: id, strength: 0.45 })),
 
-      { source: "ig_med", target: "ig_queue", strength: 0.42 },
-      { source: "ig_med", target: "meta_api", strength: 0.42 },
+      // 分類 → 專案
+      { source: "cat_trade", target: "trade_bible", strength: 0.6 },
+      { source: "cat_trade", target: "trading_system", strength: 0.5 },
+      { source: "cat_trade", target: "bitfinex", strength: 0.5 },
+      { source: "cat_trade", target: "poly", strength: 0.4 },
 
-      { source: "pocus", target: "rush", strength: 0.4 },
-      { source: "pocus", target: "efast", strength: 0.4 },
-      { source: "pocus", target: "dvt", strength: 0.35 },
+      { source: "cat_med", target: "pocus", strength: 0.6 },
 
-      { source: "trade_bible", target: "trade_knowledge", strength: 0.35 },
-      { source: "ig_med", target: "med_knowledge", strength: 0.3 },
-      { source: "pocus", target: "med_knowledge", strength: 0.45 },
-      { source: "apple_notes", target: "ai_knowledge", strength: 0.3 },
-      { source: "speech", target: "ai_knowledge", strength: 0.3 },
+      { source: "cat_ai", target: "apple_notes", strength: 0.5 },
 
-      { source: "trade_bible", target: "macmini", strength: 0.25 },
-      { source: "trade_bible", target: "win4060", strength: 0.25 },
-      { source: "ig_med", target: "github", strength: 0.2 },
-      { source: "pocus", target: "github", strength: 0.24 },
-      { source: "openclaw", target: "telegram", strength: 0.25 },
-      { source: "openclaw", target: "ai_knowledge", strength: 0.25 },
+      { source: "cat_content", target: "ig_med", strength: 0.55 },
+      { source: "cat_content", target: "speech", strength: 0.5 },
+      { source: "cat_content", target: "pocus", strength: 0.35 },
+
+      // 專案 → 基礎設施（實際使用關係）
+      { source: "trade_bible", target: "macmini", strength: 0.3 },
+      { source: "trade_bible", target: "win4060", strength: 0.3 },
       { source: "pocus", target: "obsidian", strength: 0.35 },
+      { source: "pocus", target: "github", strength: 0.3 },
       { source: "apple_notes", target: "obsidian", strength: 0.35 },
+      { source: "ig_med", target: "github", strength: 0.25 },
       { source: "speech", target: "obsidian", strength: 0.3 },
-      { source: "med_knowledge", target: "obsidian", strength: 0.3 },
-      { source: "ai_knowledge", target: "obsidian", strength: 0.3 },
-      { source: "trade_knowledge", target: "obsidian", strength: 0.3 }
+      { source: "openclaw", target: "telegram", strength: 0.3 },
+      { source: "trade_bible", target: "trading_system", strength: 0.35 }
     ];
 
     const statusColor = status => {
@@ -681,9 +670,8 @@
 
     const layerLabel = {
       center: "中心",
-      project: "核心專案",
-      sub: "子專案",
-      knowledge: "知識體系",
+      category: "分類",
+      project: "專案",
       infra: "基礎設施"
     };
 
@@ -707,6 +695,9 @@
 
       const tags = (node.tags || []).map(t => `<span class="tag">${t}</span>`).join("");
       const link = node.link ? `<a class="link-btn" href="${node.link}" target="_blank" rel="noopener">開啟相關連結</a>` : "";
+      const childrenHtml = (node.children && node.children.length)
+        ? `<h3 class="section-title">包含項目</h3><ul class="kv">${node.children.map(c => `<li>${c}</li>`).join("")}</ul>`
+        : "";
 
       sidebar.html(`
         <h2>${node.name}</h2>
@@ -715,6 +706,8 @@
 
         <h3 class="section-title">關鍵指標</h3>
         <ul class="kv">${metrics}</ul>
+
+        ${childrenHtml}
 
         <h3 class="section-title">分類與標籤</h3>
         <div class="tags">
@@ -732,6 +725,9 @@
       d3.select("#nodeCount").text(nodes.length);
       d3.select("#projectCount").text(projects.length);
       d3.select("#activeCount").text(running.length);
+
+      // Stats panel sub-label
+      d3.select("#statsPanel .metric:first-child .sub").text("分類 + 專案 + 基礎設施");
 
       const statusBuckets = d3.rollups(projects, v => v.length, d => statusSimple(d.status));
       const total = projects.length;
@@ -779,10 +775,9 @@
 
     function buildLegend() {
       const items = [
-        ["中心節點", palette.center],
-        ["核心專案", palette.project],
-        ["子專案", palette.sub],
-        ["知識體系", palette.knowledge],
+        ["中心", palette.center],
+        ["分類", palette.category],
+        ["專案", palette.project],
         ["基礎設施", palette.infra]
       ];
 
@@ -927,10 +922,9 @@
     function initFilters() {
       const options = [
         ["all", "全部"],
-        ["project", "核心專案"],
-        ["knowledge", "知識體系"],
-        ["infra", "基礎設施"],
-        ["sub", "子專案"]
+        ["category", "分類總覽"],
+        ["project", "專案"],
+        ["infra", "基礎設施"]
       ];
 
       let active = "all";
