@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>醫師 × AI 管家 專案神經網路控制台</title>
+  <title>韋明 × Jarvis 專案神經網路控制台</title>
   <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
   <style>
     :root {
@@ -449,7 +449,7 @@
   <div class="dashboard">
     <header class="header glass">
       <div class="title-wrap">
-        <h1>醫師 × AI 管家 專案神經網路控制台</h1>
+        <h1>韋明 × Jarvis 專案神經網路控制台</h1>
         <p>整體知識管理與專案體系即時可視化 ｜ 點擊節點查看詳細資訊</p>
       </div>
       <div class="status-capsule" id="capsules"></div>
@@ -499,7 +499,7 @@
     const nodes = [
       // === 中心 ===
       {
-        id: "core", name: "醫師 × AI 管家", layer: "center", group: "中心", status: "核心",
+        id: "core", name: "韋明 × Jarvis", layer: "center", group: "中心", status: "核心",
         desc: "以 OpenClaw 為核心的 AI 管家系統，串起投資、醫學、自動化三大領域。",
         importance: 42,
         metrics: { "專案": "8 個面向", "知識庫": "3 大領域", "基礎設施": "6 項" },
@@ -521,7 +521,7 @@
         importance: 28,
         metrics: { "子領域": "4", "Obsidian 路徑": "醫學/" },
         tags: ["急診", "超音波", "皮膚科", "醫美", "EBM"],
-        children: ["POCUS 超音波筆記庫 (7/20+ 主題)", "急診流程筆記", "皮膚科用藥", "醫美仿單與技巧"]
+        children: ["Obsidian 知識庫擴充", "急診流程筆記", "皮膚科用藥", "醫美仿單與技巧"]
       },
       {
         id: "cat_ai", name: "🤖 AI 工具與開發", layer: "category", group: "分類", status: "活躍",
@@ -543,6 +543,7 @@
       // === 核心專案（掛在分類下）===
       {
         id: "trade_bible", name: "交易聖經", layer: "project", group: "交易",
+        link: "transformer_private_overview.html",
         status: "✅ V10 完成，待決策 Phase 3",
         desc: "Transformer 量化策略，從 V2 迭代到 V10。V9b 目前最佳。",
         importance: 28,
@@ -551,19 +552,20 @@
         children: ["V9b Ensemble（現最佳）", "V10 三路實驗（已完成）", "Expanding Window", "Meta-Learner", "Phase1 Regime 偵測"]
       },
       {
-        id: "trading_system", name: "自動下單系統", layer: "project", group: "交易",
-        status: "⏸ 等開盤",
-        desc: "將研究好的策略自動化執行買賣。",
+        id: "trading_system", name: "無極動能心法 自動下單", layer: "project", group: "交易",
+        status: "✅ 運行中",
+        desc: "永豐 Shioaji + FinLab G6 多週期動能策略，每日 22:00 自動執行補單與換股。",
         importance: 18,
-        metrics: { "策略": "多策略組合", "模式": "自動執行" },
-        tags: ["策略執行", "自動化"]
+        metrics: { "策略": "G6 多週期動能", "資金": "10 萬", "排程": "launchd 22:00", "儀表板": "<a href='auto_trading_private_dashboard.html' style='color:#2cf7d6'>開啟 →</a>" },
+        tags: ["Shioaji", "FinLab", "launchd", "零股"],
+        children: ["補單邏輯（buy-only）", "換股邏輯（rotation）", "警示股風控", "Telegram 通知"]
       },
       {
         id: "bitfinex", name: "Bitfinex 自動放貸", layer: "project", group: "交易",
-        status: "⏸ 等入金",
-        desc: "自建 Python 自動放貸機器人，開發與測試完成。",
+        status: "✅ 已入金，準備上線",
+        desc: "自建 Python 自動放貸機器人，驗證完成，已入金，準備切 live mode。",
         importance: 17,
-        metrics: { "開發": "Sprint 1+2 完成", "測試": "全數通過" },
+        metrics: { "開發": "Sprint 1+2 完成", "測試": "88 tests 通過", "儀表板": "<a href='bitfinex_lending_dashboard.html' style='color:#2cf7d6'>開啟 →</a>" },
         tags: ["Python", "風控", "被動收入"]
       },
       {
@@ -575,14 +577,14 @@
         tags: ["套利", "事件市場"]
       },
       {
-        id: "pocus", name: "POCUS 超音波筆記庫", layer: "knowledge", group: "醫學",
-        status: "✅ Obsidian 知識庫",
-        desc: "從 POCUS 101 爬取文章，翻譯整理成中英對照 Obsidian 筆記。",
+        id: "pocus", name: "Obsidian 知識庫擴充", layer: "project", group: "醫學",
+        status: "🔄 持續擴充",
+        desc: "網頁/PDF 爬取 → 中英對照 Obsidian 筆記。涵蓋 POCUS、醫美、交易等領域。",
         importance: 24,
-        metrics: { "已完成": "7 主題", "規劃中": "20+", "自建技能": "pocus-to-obsidian" },
-        tags: ["POCUS 101", "GitHub Pages"],
+        metrics: { "POCUS": "7/20+ 主題", "醫美": "玻尿酸/拉提/注射", "技能": "knowledge-to-obsidian / pdf-to-obsidian" },
+        tags: ["知識爬取", "Obsidian", "中英對照"],
         link: "https://drvictorchen.github.io/rush-exam/",
-        children: ["✅ RUSH Exam", "✅ Shoulder", "✅ Cardiac", "✅ Lung", "✅ eFAST", "✅ Knee", "✅ Ocular", "⏳ DVT / Renal / Aorta 等 20+"]
+        children: ["✅ POCUS 超音波 (7 主題)", "✅ 醫美注射筆記", "✅ 玻尿酸品牌整理", "✅ 拉提文獻", "⏳ 持續爬取新主題"]
       },
       {
         id: "ig_med", name: "IG 醫美粉專", layer: "project", group: "內容",
@@ -613,7 +615,7 @@
       // === 基礎設施 ===
       { id: "macmini", name: "Mac mini", layer: "infra", group: "基礎設施", status: "運行中", desc: "回測運算 + 報告伺服器 + 日常開發", importance: 14, tags: ["本地運算"] },
       { id: "win4060", name: "Windows GPU 主機", layer: "infra", group: "基礎設施", status: "運行中", desc: "RTX 顯卡，深度學習訓練專用", importance: 14, tags: ["GPU 訓練"] },
-      { id: "openclaw", name: "OpenClaw + Jarvis", layer: "infra", group: "基礎設施", status: "運行中", desc: "AI 管家核心，串接所有流程與通訊", importance: 16, tags: ["AI 管家"] },
+      { id: "openclaw", name: "OpenClaw (Jarvis)", layer: "infra", group: "基礎設施", status: "運行中", desc: "AI 管家核心，串接所有流程與通訊", importance: 16, tags: ["AI 管家"] },
       { id: "obsidian", name: "Obsidian 知識庫", layer: "infra", group: "基礎設施", status: "運行中", desc: "所有專案的知識沉澱終點：筆記、MOC、儀表板", importance: 15, tags: ["第二大腦"] },
       { id: "telegram", name: "Telegram", layer: "infra", group: "基礎設施", status: "運行中", desc: "人機溝通主介面", importance: 12, tags: ["通訊"] },
       { id: "github", name: "GitHub", layer: "infra", group: "基礎設施", status: "運行中", desc: "程式碼託管 + Pages 公開分享", importance: 13, tags: ["版本管理", "Pages"] }
