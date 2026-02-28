@@ -502,7 +502,7 @@
         id: "core", name: "韋明 × Jarvis", layer: "center", group: "中心", status: "核心",
         desc: "以 OpenClaw 為核心的 AI 管家系統，串起投資、醫學、自動化三大領域。",
         importance: 42,
-        metrics: { "專案": "8 個面向", "知識庫": "3 大領域", "基礎設施": "6 項" },
+        metrics: { "專案": "10 個面向", "知識庫": "3 大領域", "基礎設施": "6 項" },
         tags: ["OpenClaw", "Jarvis", "Obsidian", "整體協同"]
       },
 
@@ -513,7 +513,7 @@
         importance: 30,
         metrics: { "子專案": "4", "Obsidian 路徑": "交易/" },
         tags: ["量化交易", "虛擬貨幣", "主動交易"],
-        children: ["交易聖經 (V2→V10 Transformer 迭代)", "自動下單系統", "Bitfinex 自動放貸", "Polymarket 套利"]
+        children: ["交易聖經 (V2→V11 Transformer 迭代)", "自動下單系統", "Bitfinex 自動放貸", "Telegram Signal Bot", "Polymarket 套利"]
       },
       {
         id: "cat_med", name: "🩺 醫學", layer: "category", group: "分類", status: "活躍",
@@ -543,29 +543,29 @@
       // === 核心專案（掛在分類下）===
       {
         id: "trade_bible", name: "交易聖經", layer: "project", group: "交易",
-        link: "transformer_private_overview.html",
-        status: "✅ V10 完成，待決策 Phase 3",
-        desc: "Transformer 量化策略，從 V2 迭代到 V10。V9b 目前最佳。",
+        link: "#",
+        status: "🔄 V11 訓練中，V9b 仍是基準",
+        desc: "Transformer 量化策略，V9b-Ens5 仍是基準（CAGR 154.5%）；V11 架構升級訓練中（d128/h8/L6，37 因子）。V10 不上線。",
         importance: 28,
-        metrics: { "迭代": "V2 → V10", "最佳版本": "V9b Ensemble", "方法": "Transformer + FinLab 回測" },
+        metrics: { "迭代": "V2 → V11", "最佳版本": "V9b-Ens5 (CAGR 154.5%, Sharpe 2.39, MDD -27.5%)", "V11 進度": "V11a s42 回測完成 (96.6%/1.90/-39.4%)", "方法": "Transformer + FinLab 回測" },
         tags: ["FinLab", "Transformer", "GPU 訓練"],
-        children: ["V9b Ensemble（現最佳）", "V10 三路實驗（已完成）", "Expanding Window", "Meta-Learner", "Phase1 Regime 偵測"]
+        children: ["V9b-Ens5（現基準，胃納量 79 萬）", "V11a s42 回測完成（胃納量 127 萬）", "V11 s123 訓練中", "V10 三路實驗（不上線）", "Phase 3 策略優化待做"]
       },
       {
         id: "trading_system", name: "無極動能心法 自動下單", layer: "project", group: "交易",
         status: "✅ 運行中",
-        desc: "永豐 Shioaji + FinLab G6 多週期動能策略，每日 22:00 自動執行補單與換股。",
+        desc: "永豐 Shioaji + FinLab G6 多週期動能策略，每日 22:00 自動執行。已加 order_dedup 防連假重複下單。",
         importance: 18,
-        metrics: { "策略": "G6 多週期動能", "資金": "10 萬", "排程": "launchd 22:00", "儀表板": "<a href='auto_trading_private_dashboard.html' style='color:#2cf7d6'>開啟 →</a>" },
+        metrics: { "策略": "G6 多週期動能", "資金": "已配置", "排程": "launchd 22:00", "儀表板": "內部" },
         tags: ["Shioaji", "FinLab", "launchd", "零股"],
-        children: ["補單邏輯（buy-only）", "換股邏輯（rotation）", "警示股風控", "Telegram 通知"]
+        children: ["補單邏輯（buy-only）", "換股邏輯（rotation）", "警示股風控", "Telegram 通知", "order_dedup 防重複下單"]
       },
       {
         id: "bitfinex", name: "Bitfinex 自動放貸", layer: "project", group: "交易",
-        status: "✅ 已入金，準備上線",
-        desc: "自建 Python 自動放貸機器人，驗證完成，已入金，準備切 live mode。",
+        status: "🟢 Live 運行中",
+        desc: "自建 Python 自動放貸機器人，已上線運行。AdaptivePeriod 策略運行中。",
         importance: 17,
-        metrics: { "開發": "Sprint 1+2 完成", "測試": "88 tests 通過", "儀表板": "<a href='bitfinex_lending_dashboard.html' style='color:#2cf7d6'>開啟 →</a>" },
+        metrics: { "狀態": "Live 運行中", "資金": "USDT 已部署", "策略": "AdaptivePeriod", "儀表板": "內部" },
         tags: ["Python", "風控", "被動收入"]
       },
       {
@@ -605,13 +605,30 @@
       },
       {
         id: "speech", name: "養蝦心得（演講）", layer: "project", group: "內容",
-        status: "📝 草稿精修中",
-        desc: "把使用 AI 管家的實戰經驗整理成演講分享素材。",
+        status: "✅ 演講素材完成",
+        desc: "使用 AI 管家的實戰經驗演講分享，含 Reveal.js 互動簡報。",
         importance: 15,
-        metrics: { "篇幅": "心路歷程 + 視覺化 + AWS 指南", "風格": "零程式背景也看得懂" },
-        tags: ["演講", "OpenClaw", "經驗分享"]
+        metrics: { "篇幅": "心路歷程 + 視覺化 + AWS 指南", "簡報": "Reveal.js 互動簡報", "風格": "零程式背景也看得懂" },
+        tags: ["演講", "OpenClaw", "經驗分享", "Reveal.js"]
       },
 
+
+      {
+        id: "signal_bot", name: "Telegram Signal Bot", layer: "project", group: "交易",
+        status: "✅ 穩定運行",
+        desc: "每日 21:00 自動更新交易訊號，支援 /refresh 手動觸發，GitHub Pages 公開頁面。",
+        importance: 16,
+        metrics: { "排程": "每日 21:00 自動 refresh", "介面": "/refresh 指令", "公開": "GitHub Pages" },
+        tags: ["Telegram", "Signal", "自動化", "GitHub Pages"]
+      },
+      {
+        id: "rdog", name: "RDOG Skill", layer: "project", group: "AI工具",
+        status: "✅ v1.0 定版",
+        desc: "住院醫師 Journal Reading 助手，自動生成 Obsidian 筆記 + 英文簡報（PPT + HTML）。",
+        importance: 17,
+        metrics: { "版本": "v1.0", "流程": "/rdog URL → Obsidian 筆記 → 英文簡報" },
+        tags: ["OpenClaw", "Skill", "醫學", "簡報"]
+      },
       // === 基礎設施 ===
       { id: "macmini", name: "Mac mini", layer: "infra", group: "基礎設施", status: "運行中", desc: "回測運算 + 報告伺服器 + 日常開發", importance: 14, tags: ["本地運算"] },
       { id: "win4060", name: "Windows GPU 主機", layer: "infra", group: "基礎設施", status: "運行中", desc: "RTX 顯卡，深度學習訓練專用", importance: 14, tags: ["GPU 訓練"] },
@@ -651,7 +668,13 @@
       { source: "ig_med", target: "github", strength: 0.25 },
       { source: "speech", target: "obsidian", strength: 0.3 },
       { source: "openclaw", target: "telegram", strength: 0.3 },
-      { source: "trade_bible", target: "trading_system", strength: 0.35 }
+      { source: "trade_bible", target: "trading_system", strength: 0.35 },
+
+      { source: "cat_trade", target: "signal_bot", strength: 0.45 },
+      { source: "cat_ai", target: "rdog", strength: 0.5 },
+      { source: "signal_bot", target: "telegram", strength: 0.35 },
+      { source: "signal_bot", target: "github", strength: 0.3 },
+      { source: "rdog", target: "obsidian", strength: 0.35 },
     ];
 
     const statusColor = status => {
